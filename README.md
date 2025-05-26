@@ -9,6 +9,29 @@ https://v0-frontend-deployment.vercel.app/
 - Task CRUD
 - Responsive UI
 - Deployed Frontend + Backend
+-                   ┌─────────────────────────────┐
+                    │       User's Browser        │
+                    │  (React-based Frontend App) │
+                    └────────────┬────────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────────┐
+                    │       Vercel Frontend        │
+                    │   (Deployed React/Vite App)  │
+                    └────────────┬────────────────┘
+                                 │ API Requests (HTTPS)
+                                 ▼
+                    ┌─────────────────────────────┐
+                    │      Backend Server (API)    │
+                    │   Node.js + Express (Render) │
+                    └────────────┬────────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────────┐
+                    │       MongoDB Atlas         │
+                    │   (Tasks, Users, Sessions)  │
+                    └─────────────────────────────┘
+
 
 ...
 
