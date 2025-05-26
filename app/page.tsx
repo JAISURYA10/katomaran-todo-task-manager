@@ -1,113 +1,78 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAuth } from "./providers"
+import { LoginForm } from "@/components/login-form"
+import { Loader2, AlertCircle, Settings } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { CheckCircle2, ListTodo } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
-export default function LoginPage() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+export default function Home() {
+  const { user, loading } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const [authError, setAuthError] = useState<string | null>(null)
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-
-    // Simulate loading
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    if (username === "mjs10" && password === "Surya@2004") {
-      localStorage.setItem("isAuthenticated", "true")
-      localStorage.setItem("username", username)
-      router.push("/dashboard")
-    } else {
-      setError("Invalid username or password")
+  useEffect(() => {
+    const error = searchParams.get("error")
+    if (error) {
+      setAuthError(decodeURIComponent(error))
     }
-    setIsLoading(false)
+  }, [searchParams])
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/dashboard")
+    }
+  }, [user, loading, router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
+  }
+
+  if (user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-full">
-              <ListTodo className="h-8 w-8 text-white" />
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">AI Todo Manager</h1>
+            <p className="text-gray-600 dark:text-gray-300">Intelligent task management with AI-powered suggestions</p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Todo Manager</h1>
-          <p className="text-gray-600 mt-2">Organize your tasks efficiently</p>
-        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Welcome Back</CardTitle>
-            <CardDescription>Sign in to your account to manage your tasks</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
+          {authError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{authError}</AlertDescription>
+            </Alert>
+          )}
 
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+          <LoginForm />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign In"}
+          <div className="mt-6 text-center">
+            <Link href="/setup">
+              <Button variant="outline" className="w-full">
+                <Settings className="w-4 h-4 mr-2" />
+                Need help setting up authentication?
               </Button>
-            </form>
+            </Link>
+          </div>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-medium text-blue-900 mb-2">Demo Credentials:</h3>
-              <p className="text-sm text-blue-700">Username: mjs10</p>
-              <p className="text-sm text-blue-700">Password: Surya@2004</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="mt-8 text-center">
-          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
-            <div className="flex items-center">
-              <CheckCircle2 className="h-4 w-4 mr-1" />
-              Secure Login
-            </div>
-            <div className="flex items-center">
-              <CheckCircle2 className="h-4 w-4 mr-1" />
-              Task Management
-            </div>
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            <p>First time? Follow the setup guide above to configure OAuth providers.</p>
           </div>
         </div>
       </div>
