@@ -38,3 +38,4 @@ https://v0-frontend-deployment.vercel.app/
 ---
 
 This project is a part of a hackathon run by https://www.katomaran.com
+![Architecture_Diagram](https://github.com/user-attachments/assets/707182b1-a6ba-406f-9f84-fd0914e9ac4e)
